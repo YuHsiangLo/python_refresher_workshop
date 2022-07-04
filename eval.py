@@ -518,3 +518,124 @@ for (prepre, pre, sep, post, postpost), freq in bi_bndry_cntr.items():
 for (prepre, pre, sep, post, postpost), freq in bi_non_bndry_cntr.items():
     bi_non_bndry_cv_cntr[
         (determine_cv(prepre), determine_cv(pre), sep, determine_cv(post), determine_cv(postpost))] += freq
+
+s = sum(uni_non_bndry_cntr.values())
+uni_non_bndry_prob = {k: v / s for k, v in uni_non_bndry_cntr.items()}
+
+num_bndry = sum(bi_bndry_cntr.values())
+num_non_bndry = sum(bi_non_bndry_cntr.values())
+
+pri_bndry = num_bndry / (num_bndry + num_non_bndry)
+pri_non_bndry = num_non_bndry / (num_bndry + num_non_bndry)
+
+
+def calc_likelihood(bi_env):
+    bndry_lik = bi_bndry_prob.get(bi_env, 0)
+    non_bndry_lik = bi_non_bndry_prob.get(bi_env, 0)
+
+    return bndry_lik, non_bndry_lik
+
+
+def calc_likelihood(bi_env, method='bi_seg'):
+    if method == 'bi_seg':
+        bndry_lik = bi_bndry_prob.get(bi_env, 0)
+        non_bndry_lik = bi_non_bndry_prob.get(bi_env, 0)
+    elif method == 'uni_seg':
+        uni_env = (bi_env[1], '_', bi_env[3])
+        bndry_lik = uni_bndry_prob.get(uni_env, 0)
+        non_bndry_lik = uni_non_bndry_prob.get(uni_env, 0)
+
+    return bndry_lik, non_bndry_lik
+
+
+def calc_likelihood(bi_env, method='bi_seg'):
+    if method == 'bi_seg':
+        bndry_lik = bi_bndry_prob.get(bi_env, 0)
+        non_bndry_lik = bi_non_bndry_prob.get(bi_env, 0)
+    elif method == 'uni_seg':
+        uni_env = (bi_env[1], '_', bi_env[3])
+        bndry_lik = uni_bndry_prob.get(uni_env, 0)
+        non_bndry_lik = uni_non_bndry_prob.get(uni_env, 0)
+    elif method == 'bi_cv':
+        bi_env = (
+        determine_cv(bi_env[0]), determine_cv(bi_env[1]), '_', determine_cv(bi_env[3]), determine_cv(bi_env[4]))
+        bndry_lik = bi_bndry_cv_prob.get(bi_env, 0)
+        non_bndry_lik = bi_non_bndry_cv_prob.get(bi_env, 0)
+    elif method == 'uni_cv':
+        uni_env = (determine_cv(bi_env[1]), '_', determine_cv(bi_env[3]))
+        bndry_lik = uni_bndry_cv_prob.get(uni_env, 0)
+        non_bndry_lik = uni_non_bndry_cv_prob.get(uni_env, 0)
+
+    return bndry_lik, non_bndry_lik
+
+def calc_likelihood(bi_env, method='bi_seg'):
+    if method == 'bi_seg':
+        bndry_lik = bi_bndry_prob.get(bi_env, 0)
+        non_bndry_lik = bi_non_bndry_prob.get(bi_env, 0)
+    elif method == 'uni_seg':
+        uni_env = (bi_env[1], '_', bi_env[3])
+        bndry_lik = uni_bndry_prob.get(uni_env, 0)
+        non_bndry_lik = uni_non_bndry_prob.get(uni_env, 0)
+    elif method == 'bi_cv':
+        bi_env = (determine_cv(bi_env[0]), determine_cv(bi_env[1]), '_', determine_cv(bi_env[3]), determine_cv(bi_env[4]))
+        bndry_lik = bi_bndry_cv_prob.get(bi_env, 0)
+        non_bndry_lik = bi_non_bndry_cv_prob.get(bi_env, 0)
+    elif method == 'uni_cv':
+        uni_env = (determine_cv(bi_env[1]), '_', determine_cv(bi_env[3]))
+        bndry_lik = uni_bndry_cv_prob.get(uni_env, 0)
+        non_bndry_lik = uni_non_bndry_cv_prob.get(uni_env, 0)
+    elif method == 'uni_bi_seg':
+        uni_env = (bi_env[1], '_', bi_env[3])
+        bndry_lik = bi_bndry_prob.get(bi_env, 0) * uni_bndry_prob.get(uni_env, 0)
+        non_bndry_lik = bi_non_bndry_prob.get(bi_env, 0) * uni_non_bndry_prob.get(uni_env, 0)
+    return bndry_lik, non_bndry_lik
+
+def calc_likelihood(bi_env, method='bi_seg'):
+    if method == 'bi_seg':
+        bndry_lik = bi_bndry_prob.get(bi_env, 1/(num_bndry + 1))
+        non_bndry_lik = bi_non_bndry_prob.get(bi_env, 1/(num_non_bndry + 1))
+    elif method == 'uni_seg':
+        uni_env = (bi_env[1], '_', bi_env[3])
+        bndry_lik = uni_bndry_prob.get(uni_env, 1/(num_bndry + 1))
+        non_bndry_lik = uni_non_bndry_prob.get(uni_env, 1/(num_non_bndry + 1))
+    elif method == 'bi_cv':
+        bi_env = (determine_cv(bi_env[0]), determine_cv(bi_env[1]), '_', determine_cv(bi_env[3]), determine_cv(bi_env[4]))
+        bndry_lik = bi_bndry_cv_prob.get(bi_env, 1/(num_bndry + 1))
+        non_bndry_lik = bi_non_bndry_cv_prob.get(bi_env, 1/(num_non_bndry + 1))
+    elif method == 'uni_cv':
+        uni_env = (determine_cv(bi_env[1]), '_', determine_cv(bi_env[3]))
+        bndry_lik = uni_bndry_cv_prob.get(uni_env, 1/(num_bndry + 1))
+        non_bndry_lik = uni_non_bndry_cv_prob.get(uni_env, 1/(num_non_bndry + 1))
+    elif method == 'uni_bi_seg':
+        uni_env = (bi_env[1], '_', bi_env[3])
+        bndry_lik = bi_bndry_prob.get(bi_env, 1/(num_bndry + 1)) * uni_bndry_prob.get(uni_env, 1/(num_bndry + 1))
+        non_bndry_lik = bi_non_bndry_prob.get(bi_env, 1/(num_non_bndry + 1)) * uni_non_bndry_prob.get(uni_env, 1/(num_non_bndry + 1))
+    return bndry_lik, non_bndry_lik
+
+
+import re
+
+test_sys = []
+
+with open('./data/test.tsv', mode='r') as f:
+    for line in f:
+        _, ipa, _ = line.strip().split(sep='\t')
+        ipa = ['#', ' '] + re.split(r'( )', ipa) + [' ', '#']
+
+        syllabified = []
+
+        for i in range(2, len(ipa) - 2):
+            if ipa[i] == ' ':
+                bi_env = (ipa[i - 3], ipa[i - 1], '_', ipa[i + 1], ipa[i + 3])
+                b = calc_likelihood(bi_env, method='bi_seg')[0] * pri_bndry
+                n = calc_likelihood(bi_env, method='bi_seg')[1] * pri_non_bndry
+
+                if b > n:
+                    syllabified.append('.')
+            else:
+                syllabified.append(ipa[i])
+
+        test_sys.append(get_syll_indices(syllabified))
+
+test_gold = [d['syll'] for d in test]
+evaluate(test_gold, test_sys)
